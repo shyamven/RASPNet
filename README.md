@@ -1,4 +1,4 @@
-## RASPNet: A Benchmark Dataset for Radar Adaptive Signal Processing Applications
+## RASPNet: Adaptive Radar Processing Code Examples
 This repository provides code examples for adaptive radar processing tasks using the RASPNet dataset. Additional updates and changes made to RASPNet are posted here.
 
 ## Dataset
