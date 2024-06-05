@@ -7,8 +7,8 @@ The RASPNet dataset can be downloaded from the following [link](https://duke.is/
 ## Code Examples
 The code examples are categorized into two folders:
 
-- Localization_Examples: This folder contains code for tasks related to target localization within radar data.
-- Transfer_Learning_Examples: This folder demonstrates using pre-trained models for other radar processing tasks through transfer learning techniques.
+- **Localization_Examples/**: This folder contains code for tasks related to target localization within radar data.
+- **Transfer_Learning_Examples/**: This folder demonstrates using pre-trained models for other radar processing tasks through transfer learning techniques.
 
 ## RASPNet Dataset Updates
 This section will be updated to reflect any changes or additions made to the RASPNet dataset. Please check back for future updates.
