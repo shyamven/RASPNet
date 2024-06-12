@@ -11,11 +11,8 @@ The code examples are categorized into two folders:
 - **Localization_Examples/**: This folder contains code for tasks related to target localization within radar data.
 - **Transfer_Learning_Examples/**: This folder demonstrates using pre-trained models for other radar processing tasks through transfer learning techniques.
 
-## RASPNet Dataset Updates
-This section will be updated to reflect any changes or additions made to the RASPNet dataset. Please check back for future updates.
-
 ## Getting Started
 To get started using the code examples, follow these steps:
-- Download the RASPNet dataset from the provided link.
-- Extract the downloaded dataset and place the files from the **EXAMPLES/** folder within the base directory of this repository.
+- Download the RASPNet EXAMPLES dataset from the provided link.
+- Extract the downloaded dataset and place the files within the same directory as the code files from **Localization_Examples/** and **Transfer_Learning_Examples/**.
 - Refer to the individual example files for specific instructions on running the code.
