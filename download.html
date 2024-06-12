@@ -47,28 +47,28 @@
     </footer>
     <script src="js/script.js"></script>
     <script>
-        function downloadAllFiles() {
+        async function downloadFile(url) {
+            return new Promise((resolve) => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = url.split('/').pop();
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                a.onload = () => resolve();
+                a.onerror = () => resolve();
+            });
+        }
+
+        async function downloadAllFiles() {
             const scenarios = [29, 35, 60, 62, 76];
-            scenarios.forEach(function(i) {
+            for (const i of scenarios) {
                 const zipFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`;
                 const csvFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`;
-
-                setTimeout(() => {
-                    const zipLink = document.createElement('a');
-                    zipLink.href = zipFileUrl;
-                    zipLink.download = zipFileUrl.split('/').pop();
-                    document.body.appendChild(zipLink);
-                    zipLink.click();
-                    document.body.removeChild(zipLink);
-
-                    const csvLink = document.createElement('a');
-                    csvLink.href = csvFileUrl;
-                    csvLink.download = csvFileUrl.split('/').pop();
-                    document.body.appendChild(csvLink);
-                    csvLink.click();
-                    document.body.removeChild(csvLink);
-                }, 1000);
-            });
+                
+                await downloadFile(zipFileUrl);
+                await downloadFile(csvFileUrl);
+            }
         }
     </script>
 </body>
