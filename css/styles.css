@@ -8,7 +8,6 @@ header {
     background: #333;
     color: #fff;
     padding: 10px 0;
-    text-align: center;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -18,9 +17,15 @@ header {
     font-weight: bold;
     margin-left: 20px;
 }
+nav {
+    flex-grow: 1;
+    text-align: center;
+}
 nav ul {
     list-style: none;
     padding: 0;
+    margin: 0;
+    display: inline-block;
 }
 nav ul li {
     display: inline;
