@@ -13,6 +13,7 @@ header {
     padding: 10px 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 .logo {
     font-size: 24px;
@@ -45,8 +46,10 @@ footer {
     background: #333;
     color: #fff;
     padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    width: 100%;
 }
 footer p {
     margin: 0;
