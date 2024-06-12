@@ -52,10 +52,11 @@
         document.addEventListener("DOMContentLoaded", function() {
             var zip = new JSZip();
             var downloadButton = document.getElementById("full-download");
-            var scenarios = [29];
+            var scenarios = [29, 35, 60, 62, 76];
             var urls = [];
 
             scenarios.forEach(function(i) {
+                urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
                 urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
             });
 
