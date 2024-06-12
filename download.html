@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <header>
@@ -28,7 +29,7 @@
         <h2>EXAMPLES Dataset</h2>
         <p>The EXAMPLES dataset comprises feature-label pairs for five radar scenarios from RASPNet, \( i \in \{29,35,60,62,76 \} \). The code examples for the EXAMPLES dataset can be found <a href="https://github.com/shyamven/RASPNet">here</a>. </p>
         <ul>
-            <li><a href="#" onclick="downloadAllFiles()">Full Download</a></li>
+            <li><a href="#" class="full-download">Full Download</a></li>
             <li><a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FEXAMPLES%2F">Link to EXAMPLES dataset</a></li>
         </ul>
     </main>
@@ -47,29 +48,19 @@
     </footer>
     <script src="js/script.js"></script>
     <script>
-        async function downloadFile(url) {
-            return new Promise((resolve) => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = url.split('/').pop();
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                a.onload = () => resolve();
-                a.onerror = () => resolve();
-            });
-        }
+        $(document).ready(function() {
+            $('a.full-download').click(function(e) {
+                e.preventDefault();
+                const scenarios = [29, 35, 60, 62, 76];
+                scenarios.forEach(function(i) {
+                    const zipFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`;
+                    const csvFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`;
 
-        async function downloadAllFiles() {
-            const scenarios = [29, 35, 60, 62, 76];
-            for (const i of scenarios) {
-                const zipFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`;
-                const csvFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`;
-                
-                await downloadFile(zipFileUrl);
-                await downloadFile(csvFileUrl);
-            }
-        }
+                    window.open(zipFileUrl, '_blank');
+                    window.open(csvFileUrl, '_blank');
+                });
+            });
+        });
     </script>
 </body>
 </html>
