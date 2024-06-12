@@ -37,3 +37,21 @@ nav ul li a {
 main {
     padding: 20px;
 }
+footer {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+footer a {
+    color: #fff;
+    text-decoration: none;
+}
+footer img {
+    height: 22px!important;
+    margin-left: 3px;
+    vertical-align: text-bottom;
+}
