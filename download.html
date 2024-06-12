@@ -5,9 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RASPNet - Download</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        window.onload = function() {
+            var zip = new JSZip();
+            var downloadButton = document.getElementById("full-download");
+            var urls = [
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29_Ground_Truth_20_rng30_1000_100k_m.csv",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35_Ground_Truth_20_rng30_1000_100k_m.csv",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60_Ground_Truth_20_rng30_1000_100k_m.csv",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62_Ground_Truth_20_rng30_1000_100k_m.csv",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
+                "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76_Ground_Truth_20_rng30_1000_100k_m.csv"
+            ];
+
+            function request(url) {
+                return fetch(url)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        var fileName = url.split('/').pop();
+                        zip.file(fileName, blob);
+                    });
+            }
+
+            downloadButton.addEventListener("click", function() {
+                Promise.all(urls.map(url => request(url)))
+                    .then(() => {
+                        return zip.generateAsync({ type: "blob" });
+                    })
+                    .then(content => {
+                        saveAs(content, "RASPNet_EXAMPLES.zip");
+                    });
+            });
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -29,7 +65,7 @@
         <h2>EXAMPLES Dataset</h2>
         <p>The EXAMPLES dataset comprises feature-label pairs for five radar scenarios from RASPNet, \( i \in \{29,35,60,62,76 \} \). The code examples for the EXAMPLES dataset can be found <a href="https://github.com/shyamven/RASPNet">here</a>. </p>
         <ul>
-            <li><a href="#" class="full-download">Full Download</a> (ensure pop-ups are enabled)</li>
+            <li><a href="#" id="full-download">Full Download</a></li>
             <li><a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FEXAMPLES%2F">Link to EXAMPLES dataset</a></li>
         </ul>
     </main>
@@ -47,20 +83,5 @@
         </p>
     </footer>
     <script src="js/script.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('a.full-download').click(function(e) {
-                e.preventDefault();
-                const scenarios = [29, 35, 60, 62, 76];
-                scenarios.forEach(function(i) {
-                    const zipFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`;
-                    const csvFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`;
-
-                    window.open(zipFileUrl, '_blank');
-                    window.open(csvFileUrl, '_blank');
-                });
-            });
-        });
-    </script>
 </body>
 </html>
