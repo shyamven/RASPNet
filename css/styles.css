@@ -45,12 +45,13 @@ main {
 .image-container {
     text-align: center;
     margin-top: 20px;
+    max-width: 100%;
+    overflow: hidden;
 }
 .image-container img {
-    max-width: 100%;
-    width: auto;
+    width: 100%;
+    max-width: 800px;
     height: auto;
-    max-height: 80vh;
 }
 footer {
     background: #333;
