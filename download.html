@@ -53,19 +53,21 @@
                 const zipFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`;
                 const csvFileUrl = `https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`;
 
-                const zipLink = document.createElement('a');
-                zipLink.href = zipFileUrl;
-                zipLink.download = zipFileUrl.split('/').pop();
-                document.body.appendChild(zipLink);
-                zipLink.click();
-                document.body.removeChild(zipLink);
+                setTimeout(() => {
+                    const zipLink = document.createElement('a');
+                    zipLink.href = zipFileUrl;
+                    zipLink.download = zipFileUrl.split('/').pop();
+                    document.body.appendChild(zipLink);
+                    zipLink.click();
+                    document.body.removeChild(zipLink);
 
-                const csvLink = document.createElement('a');
-                csvLink.href = csvFileUrl;
-                csvLink.download = csvFileUrl.split('/').pop();
-                document.body.appendChild(csvLink);
-                csvLink.click();
-                document.body.removeChild(csvLink);
+                    const csvLink = document.createElement('a');
+                    csvLink.href = csvFileUrl;
+                    csvLink.download = csvFileUrl.split('/').pop();
+                    document.body.appendChild(csvLink);
+                    csvLink.click();
+                    document.body.removeChild(csvLink);
+                }, 1000);
             });
         }
     </script>
