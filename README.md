@@ -13,6 +13,6 @@ The code examples are categorized into two folders:
 
 ## Getting Started
 To get started using the code examples, follow these steps:
-- Download the RASPNet EXAMPLES dataset from the provided link.
+- Download the RASPNet EXAMPLES dataset from the provided link for the five radar scenarios, $i \in \\{29,35,60,62,76 \\}$.
 - Extract the downloaded dataset and place the files within the same directory as the code files from **Localization_Examples/** and **Transfer_Learning_Examples/**.
 - Refer to the individual example files for specific instructions on running the code.
