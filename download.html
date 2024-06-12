@@ -29,7 +29,7 @@
         
         <h2>EXAMPLES Dataset</h2>
         <p>The EXAMPLES dataset comprises feature-label pairs for five radar scenarios from RASPNet, \( i \in \{29,35,60,62,76 \} \). The code examples for the EXAMPLES dataset can be found <a href="https://github.com/shyamven/RASPNet">here</a>.</p>
-        <p>Please note that the <b>Full Download</b> option first generates the .zip file containing all feature-label pairs before downloading, which can be time-consuming. To download individual feature-label pairs, please use the provided <b>EXAMPLES dataset link</b>.</p>
+        <p>Please note that the <b>Full Download</b> option first generates the .zip file containing all feature-label pairs before downloading. To download individual feature-label pairs, please use the <b>EXAMPLES dataset link</b>.</p>
         <ul>
             <li><a href="#" id="full-download">Full Download</a></li>
             <li><a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FEXAMPLES%2F">EXAMPLES Dataset Link</a></li>
@@ -56,7 +56,6 @@
             var urls = [];
 
             scenarios.forEach(function(i) {
-                urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
                 urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
             });
 
