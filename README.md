@@ -1,5 +1,5 @@
 ## RASPNet: Adaptive Radar Processing Code Examples
-This repository provides code examples for adaptive radar processing tasks using the RASPNet dataset found in the main text, and hosts the RASPNet website.
+This repository provides code examples for adaptive radar processing tasks using the RASPNet dataset found in the main text, and also hosts the RASPNet website.
 The RASPNet website can be accessed via the following [link](https://shyamven.github.io/RASPNet/).
 
 ## EXAMPLES Dataset
