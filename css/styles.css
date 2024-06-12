@@ -49,6 +49,7 @@ main {
 .image-container img {
     max-width: 100%;
     height: auto;
+    max-height: 80vh;
 }
 footer {
     background: #333;
