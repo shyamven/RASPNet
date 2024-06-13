@@ -273,10 +273,10 @@
                 gridItem.innerText = i;
                 gridItem.addEventListener("click", function() {
                     if (selectedScenarioIndex !== null) {
-                        document.querySelector(`.grid-item.selected`).classList.remove("selected");
+                        selectedScenarioIndex.classList.remove("selected");
                     }
-                    selectedScenarioIndex = gridItem;
-                    gridItem.classList.add("selected");
+                    selectedScenarioIndex = this;
+                    this.classList.add("selected");
                 });
                 gridContainer.appendChild(gridItem);
             }
