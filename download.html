@@ -43,8 +43,8 @@
             margin-top: 10px;
         }
         .square-button {
-            width: 80px;
-            height: 80px;
+            width: 150px;
+            height: 20px;
         }
     </style>
 </head>
@@ -75,15 +75,16 @@
             </div>
             <div class="inputs-container">
                 <div>
-                    <label for="realization-min-index" class="input-label">Realization min index <br> \(j_{min} \in \{1,2,\ldots,10{,}000\} \): </label>
+                    <label for="realization-min-index" class="input-label">Realization min index, <br> \(j_{min} \in \{1,2,\ldots,10{,}000\} \): </label>
                     <input type="text" id="realization-min-index" name="realization-min-index" class="short-input">
                 </div>
                 <div>
-                    <label for="realization-max-index" class="input-label"><br>Realization max index  <br> \(j_{max} \in \{j_{min},j_{min}+1,\ldots,10{,}000\} \): </label>
+                    <label for="realization-max-index" class="input-label"><br>Realization max index,  <br> \(j_{max} \in \{j_{min},j_{min}+1,\ldots,10{,}000\} \): </label>
                     <input type="text" id="realization-max-index" name="realization-max-index" class="short-input">
                 </div>
                 <div class="button-container">
-                    <button id="extract-dataset" class="square-button">Extract <br> Dataset</button>
+                    <label><br></label>
+                    <button id="extract-dataset" class="square-button">Extract Dataset</button>
                 </div>
             </div>
         </div>
