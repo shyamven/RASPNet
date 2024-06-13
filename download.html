@@ -262,9 +262,9 @@
                         progressBar.value = 0;
                     });
             });
-
+        
             var selectedScenarioIndex = null;
-
+        
             // Create the grid
             var gridContainer = document.getElementById("grid-container");
             for (let i = 1; i <= 100; i++) {
@@ -280,12 +280,12 @@
                 });
                 gridContainer.appendChild(gridItem);
             }
-
+        
             extractButton.addEventListener("click", function(event) {
                 event.preventDefault();
                 var realizationMinIndex = parseInt(document.getElementById("realization-min-index").value);
                 var realizationMaxIndex = parseInt(document.getElementById("realization-max-index").value);
-
+        
                 if (selectedScenarioIndex !== null && !isNaN(realizationMinIndex) && !isNaN(realizationMaxIndex) && realizationMinIndex > 0 && realizationMaxIndex <= 10000 && realizationMinIndex <= realizationMaxIndex) {
                     var scenarioIndex = parseInt(selectedScenarioIndex.innerText);
                     var customUrls = [];
@@ -294,7 +294,7 @@
                     for (var j = realizationMinIndex; j <= realizationMaxIndex; j++) {
                         customUrls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/CLUTTER/num${scenarioIndex}_lat${lat}_lon${lon}/real${j}.mat`);
                     }
-
+        
                     totalFiles = customUrls.length;
                     processedFiles = 0;
                     progressContainer.style.display = "block";
