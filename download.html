@@ -26,7 +26,23 @@
         
         <h2>Main Dataset</h2>
         <p>The main RASPNet dataset comprises 100 radar scenarios, each consisting of 10,000 clutter realizations, and can be accessed <a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FCLUTTER%2F">here</a>.</p>
+        <p>Suppose that the path to each realization is specified by:
+        https://g-297e98.1d0d8d.03c0.data.globus.org/CLUTTER/num{i}_lat..._lon.../real{j}.mat?download=1, where i is the scenario index, from 1 - 100, j is the realization number from 1 - 10000, and "..." is the latitude and longitude of the associated scenario index (which is some arbitrary number)</p>
         
+        <div>
+            <label for="scenario-index">Scenario index</label>
+            <input type="text" id="scenario-index" name="scenario-index">
+        </div>
+        <div>
+            <label for="realization-min-index">Realization min index</label>
+            <input type="text" id="realization-min-index" name="realization-min-index">
+        </div>
+        <div>
+            <label for="realization-max-index">Realization max index</label>
+            <input type="text" id="realization-max-index" name="realization-max-index">
+        </div>
+        <button id="extract-dataset">Extract Dataset</button>
+
         <h2>EXAMPLES Dataset</h2>
         <p>The EXAMPLES dataset comprises feature-label pairs for five radar scenarios from RASPNet, \( i \in \{29,35,60,62,76 \} \). The code examples for the EXAMPLES dataset can be found <a href="https://github.com/shyamven/RASPNet">here</a>.</p>
         <p>Please note that the <b>Full Download</b> option first creates the .zip file containing all feature-label pairs before downloading. To download individual feature-label pairs, please use the <b>EXAMPLES Dataset Link</b>.</p>
@@ -57,19 +73,113 @@
         document.addEventListener("DOMContentLoaded", function() {
             var zip = new JSZip();
             var downloadButton = document.getElementById("full-download");
+            var extractButton = document.getElementById("extract-dataset");
             var progressContainer = document.getElementById("progress-container");
             var progressBar = document.getElementById("progress-bar");
             var scenarios = [29, 35, 60, 62, 76];
-            var urls = [];
-            var totalFiles = 0;
-            var processedFiles = 0;
+            var latLonArray = [
+                [48.2995,-124.6272],
+                [44.1917,-124.0905],
+                [37.7856,-122.4431],
+                [41.4168,-122.2015],
+                [46.8483,-121.7566],
+                [44.0991,-121.7425],
+                [48.7358,-121.6756],
+                [35.985,-121.4863],
+                [38.9481,-120.0841],
+                [44.9981,-120.0597],
+                [36.6554,-119.9324],
+                [34.4289,-119.767],
+                [41.9174,-119.7279],
+                [37.7408,-119.5601],
+                [47.5126,-119.4791],
+                [34.092,-118.6362],
+                [36.5249,-118.4776],
+                [46.8061,-117.549],
+                [45.2452,-117.2928],
+                [36.1558,-116.9164],
+                [45.5724,-116.6787],
+                [47.6693,-116.604],
+                [48.154,-116.2233],
+                [33.4282,-115.5721],
+                [48.6336,-115.2953],
+                [33.1031,-114.9343],
+                [43.6881,-114.234],
+                [48.091,-113.8537],
+                [40.6391,-113.6525],
+                [43.3357,-113.6419],
+                [48.5934,-113.5835],
+                [37.2973,-112.9073],
+                [40.6958,-112.2119],
+                [37.6477,-112.1292],
+                [36.2069,-111.9628],
+                [33.4143,-111.4949],
+                [42.1479,-111.3145],
+                [38.136,-110.831],
+                [43.733,-110.757],
+                [44.8686,-110.5484],
+                [38.2498,-109.8142],
+                [46.7789,-109.4308],
+                [39.1789,-109.4223],
+                [36.7282,-108.202],
+                [39.5681,-107.5332],
+                [35.1394,-106.4385],
+                [41.2041,-106.0017],
+                [38.8275,-104.9488],
+                [31.8881,-104.8603],
+                [47.6532,-104.6441],
+                [32.9892,-103.8644],
+                [44.0686,-103.7762],
+                [30.0978,-103.5585],
+                [29.2851,-103.2479],
+                [43.8194,-102.3491],
+                [35.3487,-101.8228],
+                [47.1979,-99.8113],
+                [41.5587,-99.2293],
+                [26.8356,-98.4699],
+                [37.9689,-97.575],
+                [47.1179,-96.8311],
+                [34.556,-95.6221],
+                [36.1641,-93.6476],
+                [34.7491,-92.1178],
+                [47.2824,-91.2762],
+                [46.6932,-90.8629],
+                [45.5059,-90.8222],
+                [33.8204,-90.7317],
+                [30.5163,-87.8938],
+                [46.5559,-87.4021],
+                [38.6645,-86.895],
+                [42.295,-86.3169],
+                [34.4884,-85.4009],
+                [45.7183,-84.7585],
+                [36.1301,-84.3984],
+                [35.4121,-84.1288],
+                [43.6216,-83.8388],
+                [41.6194,-83.1683],
+                [35.6463,-82.8889],
+                [38.0973,-82.647],
+                [31.1162,-82.4694],
+                [38.9185,-81.0876],
+                [25.4352,-80.3665],
+                [42.0964,-80.1729],
+                [32.7996,-79.9423],
+                [40.7,-79.6343],
+                [39.96,-77.8444],
+                [39.626,-77.4582],
+                [43.4339,-76.4938],
+                [37.84,-76.2766],
+                [39.2179,-74.98],
+                [44.1415,-73.987],
+                [44.6815,-73.3225],
+                [42.6295,-73.1617],
+                [41.2875,-72.6079],
+                [41.4469,-71.5895],
+                [44.2682,-71.304],
+                [42.3328,-71.0494],
+                [44.9516,-70.4859],
+                [41.7699,-70.0207]
+            ];
 
-            scenarios.forEach(function(i) {
-                urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
-                urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
-            });
-
-            totalFiles = urls.length;
 
             function updateProgress() {
                 processedFiles++;
@@ -99,6 +209,37 @@
                         progressContainer.style.display = "none";
                         progressBar.value = 0;
                     });
+            });
+
+            extractButton.addEventListener("click", function(event) {
+                event.preventDefault();
+                var scenarioIndex = parseInt(document.getElementById("scenario-index").value);
+                var realizationMinIndex = parseInt(document.getElementById("realization-min-index").value);
+                var realizationMaxIndex = parseInt(document.getElementById("realization-max-index").value);
+
+                if (!isNaN(scenarioIndex) && !isNaN(realizationMinIndex) && !isNaN(realizationMaxIndex)) {
+                    var customUrls = [];
+                    var lat = latLon[scenarioIndex - 1][0];
+                    var lon = latLon[scenarioIndex - 1][1];
+                    for (var j = realizationMinIndex; j <= realizationMaxIndex; j++) {
+                        customUrls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/CLUTTER/num${scenarioIndex}_lat${lat}_lon${lon}/real${j}.mat?download=1`);
+                    }
+
+                    totalFiles = customUrls.length;
+                    processedFiles = 0;
+                    progressContainer.style.display = "block";
+                    Promise.all(customUrls.map(url => request(url)))
+                        .then(() => {
+                            return zip.generateAsync({ type: "blob" });
+                        })
+                        .then(content => {
+                            saveAs(content, `RASPNet_Scenario_${scenarioIndex}.zip`);
+                            progressContainer.style.display = "none";
+                            progressBar.value = 0;
+                        });
+                } else {
+                    alert("Please fill out all fields with valid numbers.");
+                }
             });
         });
     </script>
