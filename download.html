@@ -82,7 +82,7 @@
                     <input type="text" id="realization-min-index" name="realization-min-index" class="short-input">
                 </div>
                 <div>
-                    <label for="realization-max-index" class="input-label">Realization max index  <br> \(j_{max} \in \{j_{min},j_{min}+1,\ldots,10{,}000\} \): </label>
+                    <label for="realization-max-index" class="input-label"><br>Realization max index  <br> \(j_{max} \in \{j_{min},j_{min}+1,\ldots,10{,}000\} \): </label>
                     <input type="text" id="realization-max-index" name="realization-max-index" class="short-input">
                 </div>
             </div>
@@ -278,7 +278,7 @@
                     if (selectedScenarioIndex !== null) {
                         document.querySelector(`.grid-item.selected`).classList.remove("selected");
                     }
-                    selectedScenarioIndex = i;
+                    selectedScenarioIndex = gridItem;
                     gridItem.classList.add("selected");
                 });
                 gridContainer.appendChild(gridItem);
@@ -290,7 +290,7 @@
                 var realizationMaxIndex = parseInt(document.getElementById("realization-max-index").value);
 
                 if (selectedScenarioIndex !== null && !isNaN(realizationMinIndex) && !isNaN(realizationMaxIndex) && realizationMinIndex > 0 && realizationMaxIndex <= 10000 && realizationMinIndex <= realizationMaxIndex) {
-                    var scenarioIndex = selectedScenarioIndex;
+                    var scenarioIndex = parseInt(selectedScenarioIndex.innerText);
                     var customUrls = [];
                     var lat = latLonArray[scenarioIndex - 1][0];
                     var lon = latLonArray[scenarioIndex - 1][1];
