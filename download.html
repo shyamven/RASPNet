@@ -35,7 +35,7 @@
       display: flex;
       flex-direction: column;
       margin-left: 20px;
-      gap: 10px;
+      gap: 10px; /* reduced spacing between min and max elements */
     }
     .input-label {
       margin-bottom: 5px;
@@ -53,16 +53,17 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 10px; /* additional top margin */
     }
     .folder-path {
       width: 150px;
-      height: 20px;
+      height: 25px;
       padding: 5px;
       border: 1px solid #ccc;
       background-color: #fff;
       font-size: 1em;
-      overflow-x: auto;  /* allow horizontal scrolling */
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
     /* Styling for the enhanced progress container */
@@ -221,6 +222,8 @@
         processedFiles++;
         var progress = (processedFiles / totalFiles) * 100;
         progressBar.value = progress;
+
+        // Calculate elapsed and remaining time.
         var now = new Date();
         var elapsedSeconds = (now - startTime) / 1000;
         var estimatedTotal = processedFiles > 0 ? (elapsedSeconds / processedFiles) * totalFiles : 0;
@@ -232,7 +235,9 @@
       async function fetchAndWrite(url, dirHandle) {
         const response = await fetch(url);
         const blob = await response.blob();
+        // Extract filename from URL (e.g. "real123.mat")
         const fileName = url.split('/').pop();
+        // Create (or get) a file handle for writing.
         const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
         const writable = await fileHandle.createWritable();
         await writable.write(blob);
@@ -244,8 +249,10 @@
       const selectDirButton = document.getElementById("select-directory");
       selectDirButton.addEventListener("click", async function() {
         try {
+          // Opens a directory picker and stores the handle.
           selectedDirectoryHandle = await window.showDirectoryPicker();
           selectDirButton.innerText = "Select Directory";
+          // Display the directory name in the text box.
           folderPathInput.value = selectedDirectoryHandle.name;
         } catch (err) {
           console.error("Directory selection cancelled or failed", err);
@@ -275,13 +282,16 @@
         event.preventDefault();
         var realizationMinIndex = parseInt(document.getElementById("realization-min-index").value);
         var realizationMaxIndex = parseInt(document.getElementById("realization-max-index").value);
+      
         if (!selectedDirectoryHandle) {
           alert("Please select a download directory first.");
           return;
         }
+      
         if (selectedScenarioIndex !== null && !isNaN(realizationMinIndex) && !isNaN(realizationMaxIndex) &&
             realizationMinIndex > 0 && realizationMaxIndex <= 10000 && realizationMinIndex <= realizationMaxIndex) {
           var scenarioIndex = parseInt(selectedScenarioIndex.innerText);
+          // Lookup for latitude and longitude.
           var latLonArray = [
             ["48.2995","-124.6272"],
             ["44.1917","-124.0905"],
@@ -386,10 +396,14 @@
           ];
           var lat = latLonArray[scenarioIndex - 1][0];
           var lon = latLonArray[scenarioIndex - 1][1];
+      
+          // Build an array of URLs for the selected realization range.
           var customUrls = [];
           for (var j = realizationMinIndex; j <= realizationMaxIndex; j++) {
             customUrls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/CLUTTER/num${scenarioIndex}_lat${lat}_lon${lon}/real${j}.mat`);
           }
+      
+          // Create a subdirectory in the selected directory.
           try {
             var subDirName = `num${scenarioIndex}_lat${lat}_lon${lon}`;
             var subDirHandle = await selectedDirectoryHandle.getDirectoryHandle(subDirName, { create: true });
@@ -398,13 +412,17 @@
             alert("Error creating subdirectory.");
             return;
           }
+      
           totalFiles = customUrls.length;
           processedFiles = 0;
           startTime = new Date();
           progressContainer.style.display = "block";
+      
+          // Sequentially fetch and write each file.
           for (const url of customUrls) {
             await fetchAndWrite(url, subDirHandle);
           }
+      
           progressContainer.style.display = "none";
           progressBar.value = 0;
           timeInfo.innerText = "";
@@ -414,37 +432,31 @@
         }
       });
 
-      // --- EXAMPLES Dataset Full Download ---
+      // --- EXAMPLES Dataset Full Download (unchanged) ---
       var downloadButton = document.getElementById("full-download");
       downloadButton.addEventListener("click", function(event) {
         event.preventDefault();
-        var zipExamples = new JSZip();
-        var examplesUrls = [
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29_Ground_Truth_20_rng30_1000_100k_m.csv",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35_Ground_Truth_20_rng30_1000_100k_m.csv",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60_Ground_Truth_20_rng30_1000_100k_m.csv",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60_NAMF_DATA_20_rng30_pulse1_1000_100k.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62_Ground_Truth_20_rng30_1000_100k_m.csv",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62_NAMF_DATA_20_rng30_pulse1_1000_100k.zip"
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76_Ground_Truth_20_rng30_1000_100k_m.csv",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76_NAMF_DATA_20_rng30_pulse1_1000_100k.zip"
-        ];
-        totalFiles = examplesUrls.length;
+        var zip = new JSZip();
+        var scenarios = [29, 35, 60, 62, 76];
+        var urls = [];
+        scenarios.forEach(function(i) {
+          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
+          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
+        });
+        totalFiles = urls.length;
         processedFiles = 0;
         startTime = new Date();
         progressContainer.style.display = "block";
-        Promise.all(examplesUrls.map(url =>
+        Promise.all(urls.map(url =>
           fetch(url)
             .then(response => response.blob())
             .then(blob => {
               var fileName = url.split('/').pop();
-              zipExamples.file(fileName, blob);
+              zip.file(fileName, blob);
               updateProgress();
             })
         ))
-          .then(() => zipExamples.generateAsync({ type: "blob", compression: "STORE" }))
+          .then(() => zip.generateAsync({ type: "blob", compression: "STORE" }))
           .then(content => {
             saveAs(content, "EXAMPLES.zip");
             progressContainer.style.display = "none";
