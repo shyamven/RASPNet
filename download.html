@@ -57,7 +57,7 @@
     }
     .folder-path {
       width: 150px;
-      height: 30px;
+      height: 25px;
       padding: 5px;
       border: 1px solid #ccc;
       background-color: #fff;
@@ -112,7 +112,7 @@
     </p>
     <p>
       To download RASPNet scenarios, first select a directory where you wish to save the files, then choose the scenario index and specify the range of clutter realizations to extract, \( j \in \{ j_{min},j_{min}+1,\ldots,j_{max}\}\). <br />
-      When you click "Extract Dataset", a subdirectory named <code>num<em>i</em>_lat<em>lat</em>_lon<em>lon</em></code> will be created in your chosen directory, and the realization files will be saved inside.
+      When you click "Extract Dataset", a subdirectory for the chosen scenario index \(i \in \{1,2,\ldots,100\}\) will be created, and the realization files will be saved inside.
     </p>
     
     <div style="display: flex; align-items: flex-start;">
@@ -458,7 +458,7 @@
         ))
           .then(() => zip.generateAsync({ type: "blob", compression: "STORE" }))
           .then(content => {
-            saveAs(content, "RASPNet_EXAMPLES.zip");
+            saveAs(content, "EXAMPLES.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
             timeInfo.innerText = "";
@@ -492,7 +492,7 @@
         ))
           .then(() => zipCvnn.generateAsync({ type: "blob", compression: "STORE" }))
           .then(content => {
-            saveAs(content, "CVNN_Dataset.zip");
+            saveAs(content, "CVNN.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
             timeInfo.innerText = "";
