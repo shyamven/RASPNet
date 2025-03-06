@@ -62,8 +62,7 @@
       border: 1px solid #ccc;
       background-color: #fff;
       font-size: 1em;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-x: auto;  /* allow horizontal scrolling */
       white-space: nowrap;
     }
     /* Styling for the enhanced progress container */
@@ -252,7 +251,7 @@
           // Opens a directory picker and stores the handle.
           selectedDirectoryHandle = await window.showDirectoryPicker();
           selectDirButton.innerText = "Select Directory";
-          // Display the directory name in the text box.
+          // Display the entire directory name in the text box.
           folderPathInput.value = selectedDirectoryHandle.name;
         } catch (err) {
           console.error("Directory selection cancelled or failed", err);
