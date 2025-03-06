@@ -228,7 +228,7 @@
             return zip.generateAsync({ type: "blob", compression: "STORE" });
           })
           .then(content => {
-            saveAs(content, "RASPNet_EXAMPLES.zip");
+            saveAs(content, "EXAMPLES.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
             timeInfo.innerText = "";
@@ -256,7 +256,7 @@
             return zipCvnn.generateAsync({ type: "blob", compression: "STORE" });
           })
           .then(content => {
-            saveAs(content, "CVNN_Dataset.zip");
+            saveAs(content, "CVNN.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
             timeInfo.innerText = "";
