@@ -46,7 +46,7 @@
       width: 150px;
       height: 30px;
     }
-    /* Styling for the enhanced progress container */
+    /* Simplified progress container styling */
     #progress-container {
       position: fixed;
       bottom: 0;
@@ -63,11 +63,6 @@
       height: 20px;
       margin: 5px auto;
       display: block;
-    }
-    #time-info {
-      margin-top: 5px;
-      font-size: 0.9em;
-      color: #333;
     }
   </style>
 </head>
@@ -148,11 +143,10 @@
       <li><a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FEXAMPLES%2F">EXAMPLES Dataset Link</a></li>
     </ul>
 
-    <!-- Enhanced Progress Container -->
+    <!-- Simplified Progress Container -->
     <div id="progress-container" style="display:none;">
       <p>Creating .zip file ...</p>
       <progress id="progress-bar" value="0" max="100"></progress>
-      <p id="time-info"></p>
     </div>
   </main>
   <footer>
@@ -170,32 +164,16 @@
   </footer>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Global progress and timing variables.
+      // Global progress variables.
       var progressContainer = document.getElementById("progress-container");
       var progressBar = document.getElementById("progress-bar");
-      var timeInfo = document.getElementById("time-info");
       var totalFiles = 0;
       var processedFiles = 0;
-      var startTime = null;
-
-      // Helper function to format time in seconds.
-      function formatTime(seconds) {
-        var minutes = Math.floor(seconds / 60);
-        var secs = Math.floor(seconds % 60);
-        return minutes + "m " + secs + "s";
-      }
 
       function updateProgress() {
         processedFiles++;
         var progress = (processedFiles / totalFiles) * 100;
         progressBar.value = progress;
-
-        // Calculate elapsed time and estimate remaining time.
-        var now = new Date();
-        var elapsedSeconds = (now - startTime) / 1000;
-        var estimatedTotalTime = processedFiles > 0 ? (elapsedSeconds / processedFiles) * totalFiles : 0;
-        var remainingSeconds = estimatedTotalTime - elapsedSeconds;
-        timeInfo.innerText = "Elapsed: " + formatTime(elapsedSeconds) + " | Remaining: " + formatTime(remainingSeconds);
       }
 
       function request(url, zipInstance) {
@@ -221,17 +199,15 @@
         });
         totalFiles = urls.length;
         processedFiles = 0;
-        startTime = new Date();
         progressContainer.style.display = "block";
         Promise.all(urls.map(url => request(url, zip)))
           .then(() => {
             return zip.generateAsync({ type: "blob", compression: "STORE" });
           })
           .then(content => {
-            saveAs(content, "EXAMPLES.zip");
+            saveAs(content, "RASPNet_EXAMPLES.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
-            timeInfo.innerText = "";
           });
       });
 
@@ -249,17 +225,15 @@
         ];
         totalFiles = cvnnUrls.length;
         processedFiles = 0;
-        startTime = new Date();
         progressContainer.style.display = "block";
         Promise.all(cvnnUrls.map(url => request(url, zipCvnn)))
           .then(() => {
             return zipCvnn.generateAsync({ type: "blob", compression: "STORE" });
           })
           .then(content => {
-            saveAs(content, "CVNN.zip");
+            saveAs(content, "CVNN_Dataset.zip");
             progressContainer.style.display = "none";
             progressBar.value = 0;
-            timeInfo.innerText = "";
           });
       });
 
@@ -400,7 +374,6 @@
       
           totalFiles = customUrls.length;
           processedFiles = 0;
-          startTime = new Date();
           progressContainer.style.display = "block";
           var zipScenario = new JSZip();
           Promise.all(customUrls.map(url => request(url, zipScenario)))
@@ -411,7 +384,6 @@
               saveAs(content, `num${scenarioIndex}_lat${lat}_lon${lon}.zip`);
               progressContainer.style.display = "none";
               progressBar.value = 0;
-              timeInfo.innerText = "";
             });
         } else {
           alert("Please select a scenario index and fill out both realization indices with valid numbers.");
