@@ -35,7 +35,7 @@
       display: flex;
       flex-direction: column;
       margin-left: 20px;
-      gap: 15px;
+      gap: 10px; /* reduced spacing between min and max elements */
     }
     .input-label {
       margin-bottom: 5px;
@@ -53,6 +53,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-top: 10px; /* additional top margin */
     }
     .folder-path {
       width: 150px;
@@ -126,7 +127,6 @@
       <div class="inputs-container">
         <!-- Folder Selection Row -->
         <div class="folder-selection-row">
-          <br /> 
           <button id="select-directory" class="square-button">Select Directory</button>
           <input type="text" id="folder-path" class="folder-path" readonly placeholder="" />
         </div>
@@ -252,7 +252,7 @@
           // Opens a directory picker and stores the handle.
           selectedDirectoryHandle = await window.showDirectoryPicker();
           selectDirButton.innerText = "Select Directory";
-          // Display the directory name (or truncated path) in the text box.
+          // Display the directory name in the text box.
           folderPathInput.value = selectedDirectoryHandle.name;
         } catch (err) {
           console.error("Directory selection cancelled or failed", err);
