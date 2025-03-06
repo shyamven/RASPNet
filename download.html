@@ -46,7 +46,7 @@
       width: 150px;
       height: 30px;
     }
-    /* Simplified progress container styling */
+    /* Styling for the enhanced progress container */
     #progress-container {
       position: fixed;
       bottom: 0;
@@ -63,6 +63,17 @@
       height: 20px;
       margin: 5px auto;
       display: block;
+    }
+    #time-info {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #333;
+    }
+    /* Styling for the directory selector button */
+    #select-directory {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      font-size: 1em;
     }
   </style>
 </head>
@@ -86,9 +97,12 @@
       The CLUTTER dataset comprises 100 radar scenarios, each consisting of 10,000 clutter realizations, and can be accessed <a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FCLUTTER%2F">here</a>.
     </p>
     <p>
-      To download RASPNet scenarios, please specify the scenario index, \(i \in \{1,2,\ldots,100\}\), and the range of clutter realizations to extract, \( j \in \{ j_{min},j_{min}+1,\ldots,j_{max}\}\). <br />
-      A .zip file containing these realizations will be created before downloading.
+      To download RASPNet scenarios, first select a directory where you wish to save the files, then choose the scenario index and specify the range of clutter realizations to extract, \( j \in \{ j_{min},j_{min}+1,\ldots,j_{max}\}\). <br />
+      When you click "Extract Dataset", a subdirectory named <code>num<em>i</em>_lat<em>lat</em>_lon<em>lon</em></code> will be created in your chosen directory, and the realization files will be saved inside.
     </p>
+    
+    <!-- Directory Selector Button -->
+    <button id="select-directory" class="square-button">Select Download Directory</button>
     
     <div style="display: flex; align-items: flex-start;">
       <div>
@@ -143,10 +157,11 @@
       <li><a href="https://app.globus.org/file-manager?origin_id=b01166a6-0526-454a-aaff-943c7fada5d4&origin_path=%2FEXAMPLES%2F">EXAMPLES Dataset Link</a></li>
     </ul>
 
-    <!-- Simplified Progress Container -->
+    <!-- Enhanced Progress Container -->
     <div id="progress-container" style="display:none;">
-      <p>Creating .zip file ...</p>
+      <p>Downloading files ...</p>
       <progress id="progress-bar" value="0" max="100"></progress>
+      <p id="time-info"></p>
     </div>
   </main>
   <footer>
@@ -164,80 +179,64 @@
   </footer>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Global progress variables.
+      // Global progress and timing variables.
       var progressContainer = document.getElementById("progress-container");
       var progressBar = document.getElementById("progress-bar");
+      var timeInfo = document.getElementById("time-info");
       var totalFiles = 0;
       var processedFiles = 0;
+      var startTime = null;
+
+      // Global variable for the chosen directory (FileSystemDirectoryHandle)
+      let selectedDirectoryHandle = null;
+
+      // Helper function to format seconds as "Xm Ys".
+      function formatTime(seconds) {
+        var minutes = Math.floor(seconds / 60);
+        var secs = Math.floor(seconds % 60);
+        return minutes + "m " + secs + "s";
+      }
 
       function updateProgress() {
         processedFiles++;
         var progress = (processedFiles / totalFiles) * 100;
         progressBar.value = progress;
+
+        // Calculate elapsed and remaining time.
+        var now = new Date();
+        var elapsedSeconds = (now - startTime) / 1000;
+        var estimatedTotal = processedFiles > 0 ? (elapsedSeconds / processedFiles) * totalFiles : 0;
+        var remainingSeconds = estimatedTotal - elapsedSeconds;
+        timeInfo.innerText = "Elapsed: " + formatTime(elapsedSeconds) + " | Remaining: " + formatTime(remainingSeconds);
       }
 
-      function request(url, zipInstance) {
-        return fetch(url)
-          .then(response => response.blob())
-          .then(blob => {
-            var fileName = url.split('/').pop();
-            zipInstance.file(fileName, blob);
-            updateProgress();
-          });
+      // Function to fetch a file from URL and write it to a given directory handle.
+      async function fetchAndWrite(url, dirHandle) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        // Extract filename from URL (e.g. "real123.mat")
+        const fileName = url.split('/').pop();
+        // Create (or get) a file handle for writing.
+        const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        updateProgress();
       }
 
-      // EXAMPLES Dataset Full Download
-      var downloadButton = document.getElementById("full-download");
-      downloadButton.addEventListener("click", function(event) {
-        event.preventDefault();
-        var zip = new JSZip();
-        var scenarios = [29, 35, 60, 62, 76];
-        var urls = [];
-        scenarios.forEach(function(i) {
-          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
-          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
-        });
-        totalFiles = urls.length;
-        processedFiles = 0;
-        progressContainer.style.display = "block";
-        Promise.all(urls.map(url => request(url, zip)))
-          .then(() => {
-            return zip.generateAsync({ type: "blob", compression: "STORE" });
-          })
-          .then(content => {
-            saveAs(content, "RASPNet_EXAMPLES.zip");
-            progressContainer.style.display = "none";
-            progressBar.value = 0;
-          });
+      // --- CLUTTER Dataset: Directory selection and extraction ---
+      const selectDirButton = document.getElementById("select-directory");
+      selectDirButton.addEventListener("click", async function() {
+        try {
+          // Opens a directory picker and stores the handle.
+          selectedDirectoryHandle = await window.showDirectoryPicker();
+          selectDirButton.innerText = "Directory Selected";
+        } catch (err) {
+          console.error("Directory selection cancelled or failed", err);
+        }
       });
 
-      // CVNN Dataset Full Download
-      var fullDownloadCvnn = document.getElementById("full-download-cvnn");
-      fullDownloadCvnn.addEventListener("click", function(event) {
-        event.preventDefault();
-        var zipCvnn = new JSZip();
-        var cvnnUrls = [
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62.zip",
-          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76.zip"
-        ];
-        totalFiles = cvnnUrls.length;
-        processedFiles = 0;
-        progressContainer.style.display = "block";
-        Promise.all(cvnnUrls.map(url => request(url, zipCvnn)))
-          .then(() => {
-            return zipCvnn.generateAsync({ type: "blob", compression: "STORE" });
-          })
-          .then(content => {
-            saveAs(content, "CVNN_Dataset.zip");
-            progressContainer.style.display = "none";
-            progressBar.value = 0;
-          });
-      });
-
-      // Scenario Grid and Extraction for CLUTTER dataset
+      // Create the grid for scenario selection.
       var selectedScenarioIndex = null;
       var gridContainer = document.getElementById("grid-container");
       for (let i = 1; i <= 100; i++) {
@@ -253,17 +252,23 @@
         });
         gridContainer.appendChild(gridItem);
       }
-      
+
+      // CLUTTER extraction button.
       var extractButton = document.getElementById("extract-dataset");
-      extractButton.addEventListener("click", function(event) {
+      extractButton.addEventListener("click", async function(event) {
         event.preventDefault();
         var realizationMinIndex = parseInt(document.getElementById("realization-min-index").value);
         var realizationMaxIndex = parseInt(document.getElementById("realization-max-index").value);
       
+        if (!selectedDirectoryHandle) {
+          alert("Please select a download directory first.");
+          return;
+        }
+      
         if (selectedScenarioIndex !== null && !isNaN(realizationMinIndex) && !isNaN(realizationMaxIndex) &&
             realizationMinIndex > 0 && realizationMaxIndex <= 10000 && realizationMinIndex <= realizationMaxIndex) {
           var scenarioIndex = parseInt(selectedScenarioIndex.innerText);
-          var customUrls = [];
+          // Lookup for latitude and longitude.
           var latLonArray = [
             ["48.2995","-124.6272"],
             ["44.1917","-124.0905"],
@@ -368,26 +373,107 @@
           ];
           var lat = latLonArray[scenarioIndex - 1][0];
           var lon = latLonArray[scenarioIndex - 1][1];
+      
+          // Build an array of URLs for the selected realization range.
+          var customUrls = [];
           for (var j = realizationMinIndex; j <= realizationMaxIndex; j++) {
             customUrls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/CLUTTER/num${scenarioIndex}_lat${lat}_lon${lon}/real${j}.mat`);
           }
       
+          // Create a subdirectory in the selected directory.
+          try {
+            var subDirName = `num${scenarioIndex}_lat${lat}_lon${lon}`;
+            var subDirHandle = await selectedDirectoryHandle.getDirectoryHandle(subDirName, { create: true });
+          } catch (error) {
+            console.error("Failed to create subdirectory", error);
+            alert("Error creating subdirectory.");
+            return;
+          }
+      
           totalFiles = customUrls.length;
           processedFiles = 0;
+          startTime = new Date();
           progressContainer.style.display = "block";
-          var zipScenario = new JSZip();
-          Promise.all(customUrls.map(url => request(url, zipScenario)))
-            .then(() => {
-              return zipScenario.generateAsync({ type: "blob", compression: "STORE" });
-            })
-            .then(content => {
-              saveAs(content, `num${scenarioIndex}_lat${lat}_lon${lon}.zip`);
-              progressContainer.style.display = "none";
-              progressBar.value = 0;
-            });
+      
+          // Sequentially fetch and write each file.
+          for (const url of customUrls) {
+            await fetchAndWrite(url, subDirHandle);
+          }
+      
+          progressContainer.style.display = "none";
+          progressBar.value = 0;
+          timeInfo.innerText = "";
+          alert("CLUTTER dataset extraction complete.");
         } else {
           alert("Please select a scenario index and fill out both realization indices with valid numbers.");
         }
+      });
+
+      // --- EXAMPLES Dataset Full Download (unchanged) ---
+      var downloadButton = document.getElementById("full-download");
+      downloadButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        var zip = new JSZip();
+        var scenarios = [29, 35, 60, 62, 76];
+        var urls = [];
+        scenarios.forEach(function(i) {
+          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_NAMF_DATA_20_rng30_pulse1_1000_100k.zip`);
+          urls.push(`https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num${i}_Ground_Truth_20_rng30_1000_100k_m.csv`);
+        });
+        totalFiles = urls.length;
+        processedFiles = 0;
+        startTime = new Date();
+        progressContainer.style.display = "block";
+        Promise.all(urls.map(url =>
+          fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+              var fileName = url.split('/').pop();
+              zip.file(fileName, blob);
+              updateProgress();
+            })
+        ))
+          .then(() => zip.generateAsync({ type: "blob", compression: "STORE" }))
+          .then(content => {
+            saveAs(content, "RASPNet_EXAMPLES.zip");
+            progressContainer.style.display = "none";
+            progressBar.value = 0;
+            timeInfo.innerText = "";
+          });
+      });
+
+      // --- CVNN Dataset Full Download (unchanged) ---
+      var fullDownloadCvnn = document.getElementById("full-download-cvnn");
+      fullDownloadCvnn.addEventListener("click", function(event) {
+        event.preventDefault();
+        var zipCvnn = new JSZip();
+        var cvnnUrls = [
+          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num29.zip",
+          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num35.zip",
+          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num60.zip",
+          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num62.zip",
+          "https://g-297e98.1d0d8d.03c0.data.globus.org/EXAMPLES/num76.zip"
+        ];
+        totalFiles = cvnnUrls.length;
+        processedFiles = 0;
+        startTime = new Date();
+        progressContainer.style.display = "block";
+        Promise.all(cvnnUrls.map(url =>
+          fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+              var fileName = url.split('/').pop();
+              zipCvnn.file(fileName, blob);
+              updateProgress();
+            })
+        ))
+          .then(() => zipCvnn.generateAsync({ type: "blob", compression: "STORE" }))
+          .then(content => {
+            saveAs(content, "CVNN_Dataset.zip");
+            progressContainer.style.display = "none";
+            progressBar.value = 0;
+            timeInfo.innerText = "";
+          });
       });
     });
   </script>
