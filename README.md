@@ -1,5 +1,5 @@
 ## RASPNet: Adaptive Radar Processing Code Examples
-This repository provides code examples for adaptive radar processing tasks through the RASPNet EXAMPLES dataset — a processed version of RASPNet, used to produce the empirical results from the main text.
+This repository provides code examples for adaptive radar processing tasks through the RASPNet EXAMPLES and CVNN datasets — processed versions of RASPNet, used to produce the empirical results from the main text.
 
 ## Datasets
 The RASPNet EXAMPLES and CVNN datasets to run the code examples can be downloaded from the following [link](https://www.sdms.afrl.af.mil/index.php?collection=raspnet). These datasets includes feature-label pairs for training and evaluating the models in the code examples, and span five radar scenarios: $i \in \\{29,35,60,62,76 \\}$.
